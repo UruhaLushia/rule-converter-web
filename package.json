@@ -1,0 +1,39 @@
+{
+  "name": "rule-converter-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --force",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@heroui/react": "^3.0.4",
+    "@heroui/styles": "^3.0.4",
+    "@uruhalushia/rule-converter-wasm": "^0.3.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-virtuoso": "^4.18.7",
+    "tailwindcss": "^4.2.4",
+    "vite-plugin-wasm": "^3.6.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.2.4",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.5.0",
+    "prettier": "^3.8.3",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.58.2",
+    "vite": "^8.0.10"
+  }
+}

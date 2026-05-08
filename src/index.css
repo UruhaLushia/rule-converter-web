@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "@heroui/styles";
+
+.dark {
+  --color-background: #0f1012;
+  --color-foreground: #e6e2d8;
+  --color-surface: #17181c;
+  --color-default: #24252a;
+  --color-muted: #aaa79f;
+  --color-separator: #2d2e34;
+}
+
+html {
+  background: var(--color-background);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--color-background);
+}
