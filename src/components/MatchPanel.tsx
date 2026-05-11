@@ -1,24 +1,8 @@
 import { Button, Card } from "@heroui/react";
-import { INPUT_BEHAVIORS, INPUT_TARGETS } from "../constants";
-import type {
-  Behavior,
-  DetectResult,
-  InputFormat,
-  InputTarget,
-  OptionItem,
-} from "../types";
+import type { DetectResult } from "../types";
 import { DetectedInputSummary } from "./DetectedInputSummary";
-import { OptionSelect } from "./OptionSelect";
 
 interface MatchPanelProps {
-  inputTarget: InputTarget;
-  setInputTarget: (value: InputTarget) => void;
-  inputFormat: InputFormat;
-  setInputFormat: (value: InputFormat) => void;
-  inputFormats: OptionItem<InputFormat>[];
-  inputBehavior: Behavior;
-  setInputBehavior: (value: Behavior) => void;
-  inputBehaviorSupported: boolean;
   detectedInput: DetectResult | null;
   matchQuery: string;
   setMatchQuery: (value: string) => void;
@@ -36,41 +20,11 @@ export function MatchPanel(props: MatchPanelProps) {
         </Card.Description>
       </Card.Header>
       <Card.Content className="space-y-3">
-        <div className="space-y-2.5">
-          <div className="text-xs font-medium uppercase text-muted">输入</div>
-          {props.detectedInput ? (
-            <DetectedInputSummary detectedInput={props.detectedInput} />
-          ) : (
-            <>
-              <OptionSelect
-                label="目标"
-                value={props.inputTarget}
-                onChange={props.setInputTarget}
-                items={INPUT_TARGETS}
-              />
-              <OptionSelect
-                label="格式"
-                value={props.inputFormat}
-                onChange={props.setInputFormat}
-                items={props.inputFormats}
-              />
-              {props.inputBehaviorSupported ? (
-                <OptionSelect
-                  label="行为"
-                  value={props.inputBehavior}
-                  onChange={props.setInputBehavior}
-                  items={INPUT_BEHAVIORS}
-                />
-              ) : (
-                <div className="rounded-md bg-default px-3 py-2 text-sm text-muted">
-                  数据库输入不需要规则行为。
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        {props.detectedInput && (
+          <DetectedInputSummary detectedInput={props.detectedInput} />
+        )}
 
-        <div className="grid gap-2 border-t border-separator pt-3">
+        <div className="grid gap-2">
           <label className="grid gap-1 text-sm">
             <span className="font-medium">查询</span>
             <input

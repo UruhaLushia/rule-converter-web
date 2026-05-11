@@ -7,7 +7,6 @@ import {
   matchStr,
 } from "@uruhalushia/rule-converter-wasm";
 import {
-  INPUT_FORMATS_BY_TARGET,
   OUTPUT_FORMATS_BY_TARGET,
   OUTPUT_TARGETS,
   SAMPLE_TEXT,
@@ -65,9 +64,9 @@ export default function App() {
     },
   ]);
 
-  const [inputTarget, setInputTargetState] = useState<InputTarget>("auto");
-  const [inputFormat, setInputFormat] = useState<InputFormat>("auto");
-  const [inputBehavior, setInputBehavior] = useState<Behavior>("auto");
+  const [inputTarget] = useState<InputTarget>("auto");
+  const [inputFormat] = useState<InputFormat>("auto");
+  const [inputBehavior] = useState<Behavior>("auto");
   const [outputTarget, setOutputTargetState] = useState<OutputTarget>("mihomo");
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("mrs");
   const [outputBehavior, setOutputBehavior] = useState<OutputBehavior>(() =>
@@ -92,7 +91,6 @@ export default function App() {
 
   const lockedDetectedInput = detectedInput;
   const primaryInput = inputSources[0];
-  const inputFormats = INPUT_FORMATS_BY_TARGET[inputTarget];
   const outputTargets = outputTargetsForInput(lockedDetectedInput);
   const outputFormats = outputFormatsForInput(
     lockedDetectedInput,
@@ -185,17 +183,6 @@ export default function App() {
       setOutputName(defaultMergedOutputName(inputSources, outputFormat));
     }
   }, [inputSources, outputFormat, outputName, supportsSplitOutput]);
-
-  const setInputTarget = (next: InputTarget) => {
-    setInputTargetState(next);
-    const nextFormats = INPUT_FORMATS_BY_TARGET[next];
-    if (!nextFormats.some((item) => item.id === inputFormat)) {
-      setInputFormat(nextFormats[0].id);
-    }
-    if (!supportsInputBehavior(next)) {
-      setInputBehavior("auto");
-    }
-  };
 
   const setOutputTarget = (next: OutputTarget) => {
     setOutputTargetState(next);
@@ -462,14 +449,6 @@ export default function App() {
                 />
               ) : (
                 <MatchPanel
-                  inputTarget={inputTarget}
-                  setInputTarget={setInputTarget}
-                  inputFormat={inputFormat}
-                  setInputFormat={setInputFormat}
-                  inputFormats={inputFormats}
-                  inputBehavior={inputBehavior}
-                  setInputBehavior={setInputBehavior}
-                  inputBehaviorSupported={inputBehaviorSupported}
                   detectedInput={lockedDetectedInput}
                   matchQuery={matchQuery}
                   setMatchQuery={setMatchQuery}
