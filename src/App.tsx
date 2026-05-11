@@ -1,8 +1,17 @@
+import {
+  RiComputerLine,
+  RiGithubLine,
+  RiMenuLine,
+  RiMoonLine,
+  RiSunLine,
+} from "react-icons/ri";
 import { useEffect, useMemo, useState } from "react";
 import {
   buildDb,
   bufToBuf,
   bufToStr,
+  detectBuf,
+  listIndexes,
   matchBuf,
   matchStr,
 } from "@uruhalushia/rule-converter-wasm";
@@ -19,6 +28,7 @@ import {
 import { ControlPanel } from "./components/ControlPanel";
 import { ErrorAlert } from "./components/ErrorAlert";
 import { InputPanel } from "./components/InputPanel";
+import { IndexPanel } from "./components/IndexPanel";
 import { MatchPanel } from "./components/MatchPanel";
 import { OutputPanel } from "./components/OutputPanel";
 import { ToolResults } from "./components/ToolResults";
@@ -48,10 +58,15 @@ import {
   shouldReturnBytes,
   withOutputExtension,
 } from "./utils";
+import { getThemePreference, setThemePreference } from "./theme";
+import type { ThemePreference } from "./theme";
 
 export default function App() {
   const [workspace, setWorkspace] = useState<WorkspaceMode>("convert");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [themePreference, setThemePreferenceState] = useState<ThemePreference>(
+    () => getThemePreference(),
+  );
   const [inputSources, setInputSources] = useState<InputSourceItem[]>(() => [
     {
       id: crypto.randomUUID(),
@@ -88,6 +103,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [isMatching, setIsMatching] = useState(false);
+  const [isReadingIndexes, setIsReadingIndexes] = useState(false);
 
   const lockedDetectedInput = detectedInput;
   const outputTargets = outputTargetsForInput(lockedDetectedInput);
@@ -245,8 +261,15 @@ export default function App() {
       inputSources.map((item) => (item.id === source.id ? source : item)),
     );
 
+  const replaceSource = (source: InputSourceItem) => setSources([source]);
+
   const removeSource = (id: string) =>
     setSources(inputSources.filter((item) => item.id !== id));
+
+  const selectThemePreference = (next: ThemePreference) => {
+    setThemePreference(next);
+    setThemePreferenceState(next);
+  };
 
   const buildOptions = (): ConvertOptions => ({
     inputTarget: effectiveInputTarget,
@@ -344,8 +367,39 @@ export default function App() {
     }
   };
 
+  const handleReadIndexes = async () => {
+    setError(null);
+    setMatchResult(null);
+    setIndexSections([]);
+    setIsReadingIndexes(true);
+    try {
+      if (inputSources.length !== 1 || inputSources[0].kind !== "file") {
+        throw new Error("索引读取仅支持单个文件输入");
+      }
+      const payload = await sourcePayload(inputSources[0]);
+      let detected: DetectResult;
+      try {
+        detected = detectBuf(payload) as DetectResult;
+      } catch {
+        throw new Error("无法识别输入文件类型");
+      }
+      if (detected.kind !== "db") {
+        throw new Error("索引读取仅支持数据库文件");
+      }
+      const merged = mergeIndexSections(listIndexes(payload) as IndexSection[]);
+      if (merged.length === 0) {
+        throw new Error("当前输入没有可读取的索引");
+      }
+      setIndexSections(merged);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setIsReadingIndexes(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-default/30 text-foreground transition-colors">
+    <div className="min-h-screen bg-background text-foreground transition-colors">
       <main className="mx-auto flex w-full max-w-360 flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:px-8">
         <header className="flex flex-col gap-2 py-1 sm:flex-row sm:items-end sm:justify-between sm:py-2">
           <div>
@@ -353,10 +407,10 @@ export default function App() {
               <button
                 type="button"
                 aria-label="打开侧栏"
-                className="grid size-10 place-items-center rounded-full border border-separator bg-surface text-lg shadow-sm sm:hidden"
+                className="grid size-10 place-items-center rounded-[10px] border border-separator bg-surface text-lg sm:hidden"
                 onClick={() => setSidebarOpen(true)}
               >
-                ☰
+                <RiMenuLine className="size-4" aria-hidden="true" />
               </button>
               <h1 className="text-2xl font-semibold tracking-normal">
                 Rule Converter
@@ -368,22 +422,18 @@ export default function App() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted sm:justify-end">
-            <span>Mihomo / Sing-Box / Egern / General / GeoIP / Geosite</span>
+            <ThemePreferenceTabs
+              value={themePreference}
+              onChange={selectThemePreference}
+            />
             <a
-              className="grid size-8 place-items-center rounded-full text-foreground/80 transition-colors hover:bg-surface hover:text-accent"
+              className="grid size-8 place-items-center rounded-[10px] text-foreground/80 transition-colors hover:bg-surface hover:text-accent"
               href="https://github.com/UruhaLushia/rule-converter-web"
               target="_blank"
               rel="noreferrer"
               aria-label="源码"
             >
-              <svg
-                className="size-4"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2.01c-3.2.7-3.88-1.38-3.88-1.38-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.17 1.18A11.03 11.03 0 0 1 12 6.12c.98 0 1.96.13 2.88.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.69.42.36.78 1.06.78 2.14v3.03c0 .31.21.67.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
-              </svg>
+              <RiGithubLine className="size-4" aria-hidden="true" />
             </a>
           </div>
         </header>
@@ -400,7 +450,9 @@ export default function App() {
             <div className="flex flex-col gap-3">
               <InputPanel
                 sources={inputSources}
+                mode={workspace === "index" ? "single-file" : "multiple"}
                 onAdd={addSource}
+                onReplace={replaceSource}
                 onUpdate={updateSource}
                 onRemove={removeSource}
               />
@@ -412,7 +464,7 @@ export default function App() {
                 />
               ) : (
                 <ToolResults
-                  matchResult={matchResult}
+                  matchResult={workspace === "match" ? matchResult : null}
                   indexSections={indexSections}
                 />
               )}
@@ -451,13 +503,18 @@ export default function App() {
                     withOutputExtension(name, outputFormat)
                   }
                 />
-              ) : (
+              ) : workspace === "match" ? (
                 <MatchPanel
                   detectedInput={lockedDetectedInput}
                   matchQuery={matchQuery}
                   setMatchQuery={setMatchQuery}
                   isMatching={isMatching}
                   handleMatch={handleMatch}
+                />
+              ) : (
+                <IndexPanel
+                  isReading={isReadingIndexes}
+                  handleReadIndexes={handleReadIndexes}
                 />
               )}
               <ErrorAlert error={error} />
@@ -483,6 +540,23 @@ function indexItems(sections: IndexSection[], titlePrefix: string) {
     sections.find((section) => section.title.startsWith(titlePrefix))?.items ??
     []
   );
+}
+
+function mergeIndexSections(sections: IndexSection[]) {
+  const itemsByTitle = new Map<string, Set<string>>();
+  for (const section of sections) {
+    if (!section.items.length) continue;
+    const items = itemsByTitle.get(section.title) ?? new Set<string>();
+    for (const item of section.items) {
+      const value = item.trim();
+      if (value) items.add(value);
+    }
+    itemsByTitle.set(section.title, items);
+  }
+  return [...itemsByTitle].map(([title, items]) => ({
+    title,
+    items: [...items].sort((a, b) => a.localeCompare(b)),
+  }));
 }
 
 function withInputSource(result: MatchResult, source: InputSourceItem) {
@@ -768,5 +842,55 @@ function dbBuildEntryKeys(source: InputSourceItem, filter: Set<string>) {
       filter.size === 0 ||
       filter.has(key) ||
       [...filter].some((value) => dbFilterMatchesSource(value, source, key)),
+  );
+}
+
+const THEME_TABS: {
+  id: ThemePreference;
+  label: string;
+  Icon: typeof RiComputerLine;
+}[] = [
+  { id: "auto", label: "自动", Icon: RiComputerLine },
+  { id: "light", label: "浅色", Icon: RiSunLine },
+  { id: "dark", label: "深色", Icon: RiMoonLine },
+];
+
+function ThemePreferenceTabs({
+  value,
+  onChange,
+}: {
+  value: ThemePreference;
+  onChange: (value: ThemePreference) => void;
+}) {
+  return (
+    <div
+      className="inline-grid grid-cols-3 rounded-[10px] bg-default p-1"
+      role="tablist"
+      aria-label="主题"
+    >
+      {THEME_TABS.map((item) => {
+        const active = value === item.id;
+        const Icon = item.Icon;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            aria-label={`主题：${item.label}`}
+            title={item.label}
+            className={[
+              "grid size-7 place-items-center rounded-[8px] text-sm leading-none transition-colors",
+              active
+                ? "bg-surface text-foreground"
+                : "text-muted hover:text-foreground",
+            ].join(" ")}
+            onClick={() => onChange(item.id)}
+          >
+            <Icon className="size-4" aria-hidden="true" />
+          </button>
+        );
+      })}
+    </div>
   );
 }

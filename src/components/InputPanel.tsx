@@ -20,7 +20,9 @@ import { OptionSelect } from "./OptionSelect";
 
 interface InputPanelProps {
   sources: InputSourceItem[];
+  mode?: "multiple" | "single-file";
   onAdd: (source: InputSourceItem) => void;
+  onReplace?: (source: InputSourceItem) => void;
   onUpdate: (source: InputSourceItem) => void;
   onRemove: (id: string) => void;
 }
@@ -38,7 +40,9 @@ const emptyDraft: Draft = {
 
 export function InputPanel({
   sources,
+  mode = "multiple",
   onAdd,
+  onReplace,
   onUpdate,
   onRemove,
 }: InputPanelProps) {
@@ -57,6 +61,14 @@ export function InputPanel({
 
   const openAddFile = (file: File | null) => {
     if (!file) return;
+    if (mode === "single-file") {
+      const source = { ...draftFromFile(file), id: crypto.randomUUID() };
+      onReplace?.(source);
+      void detectFileDraft(file, (detected) => {
+        onReplace?.({ ...applyDetectedInput(source, detected), id: source.id });
+      });
+      return;
+    }
     setEditingId(null);
     openFileDraft(draftFromFile(file));
   };
@@ -90,72 +102,120 @@ export function InputPanel({
     setEditingId(null);
   };
 
+  const singleFileMode = mode === "single-file";
+
   return (
-    <Card className="rounded-lg border border-separator shadow-sm">
+    <Card className="rounded-[14px] border border-separator">
       <Card.Header>
         <div className="min-w-0">
           <Card.Title>输入</Card.Title>
           <Card.Description>
-            多个文本或文件会作为独立条目构建数据库。
+            {singleFileMode
+              ? "选择一个数据库文件读取索引。"
+              : "多个文本或文件会作为独立条目构建数据库。"}
           </Card.Description>
         </div>
       </Card.Header>
       <Card.Content className="space-y-2 pt-0">
-        {sources.map((source) => (
-          <div
-            key={source.id}
-            className="grid gap-2 rounded-md border border-separator bg-surface px-3 py-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+        {singleFileMode && (
+          <button
+            type="button"
+            className="grid min-h-40 w-full place-items-center rounded-[10px] border border-dashed border-separator bg-surface px-4 text-center text-sm text-muted transition-colors hover:border-accent hover:text-foreground"
+            onClick={() => addFileInputRef.current?.click()}
           >
-            <button
-              type="button"
-              className="min-w-0 text-left"
-              onClick={() => openEdit(source)}
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="truncate text-base font-medium">
-                  {source.key}
+            {sources[0]?.kind === "file" ? (
+              <span>
+                <span className="block font-medium text-foreground">
+                  {sources[0].fileName}
                 </span>
-                <Badge>{source.kind === "text" ? "文本" : "文件"}</Badge>
-                {source.detecting ? (
-                  <Badge>检测中</Badge>
-                ) : (
-                  <>
-                    <Badge>{source.target}</Badge>
-                    <Badge>{source.format}</Badge>
-                    <Badge>{source.behavior}</Badge>
-                  </>
-                )}
-              </div>
-              <div className="mt-1 truncate text-xs text-muted">
-                {source.kind === "file"
-                  ? `${source.fileName} · ${formatBytes(source.size ?? 0)}`
-                  : source.text.split("\n").find(Boolean) || "空文本"}
-              </div>
-            </button>
-            <div className="flex justify-end gap-1">
-              <Button
-                size="sm"
-                variant="outline"
-                onPress={() => openEdit(source)}
-              >
-                编辑
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onPress={() => onRemove(source.id)}
-              >
-                删除
-              </Button>
-            </div>
-          </div>
-        ))}
-        {sources.length === 0 && (
-          <div className="grid min-h-32 w-full place-items-center rounded-md border border-dashed border-separator bg-surface px-4 text-center text-sm text-muted">
-            暂无输入条目
-          </div>
+                <span className="mt-1 block">
+                  {formatBytes(sources[0].size ?? 0)}
+                </span>
+                <span className="mt-2 flex flex-wrap justify-center gap-1.5">
+                  {sources[0].detecting ? (
+                    <Badge>检测中</Badge>
+                  ) : sources[0].target !== "auto" ? (
+                    <>
+                      <Badge>{sources[0].target}</Badge>
+                      <Badge>{sources[0].format}</Badge>
+                      {sources[0].behavior !== "auto" && (
+                        <Badge>{sources[0].behavior}</Badge>
+                      )}
+                    </>
+                  ) : (
+                    <Badge>未识别</Badge>
+                  )}
+                </span>
+              </span>
+            ) : (
+              "选择索引文件"
+            )}
+          </button>
         )}
-        <AddSourceDropdown onAdd={openAdd} />
+        {!singleFileMode && (
+          <>
+            {sources.map((source) => (
+              <div
+                key={source.id}
+                className="grid gap-2 rounded-[10px] border border-separator bg-surface px-3 py-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+              >
+                <button
+                  type="button"
+                  className="min-w-0 text-left"
+                  onClick={() => openEdit(source)}
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="truncate text-base font-medium">
+                      {source.key}
+                    </span>
+                    <Badge>{source.kind === "text" ? "文本" : "文件"}</Badge>
+                    {source.detecting ? (
+                      <Badge>检测中</Badge>
+                    ) : (
+                      <>
+                        <Badge>{source.target}</Badge>
+                        <Badge>{source.format}</Badge>
+                        {source.target !== "geoip" &&
+                          source.target !== "geosite" &&
+                          source.target !== "asn" &&
+                          source.behavior !== "auto" && (
+                            <Badge>{source.behavior}</Badge>
+                          )}
+                      </>
+                    )}
+                  </div>
+                  <div className="mt-1 truncate text-xs text-muted">
+                    {source.kind === "file"
+                      ? `${source.fileName} · ${formatBytes(source.size ?? 0)}`
+                      : source.text.split("\n").find(Boolean) || "空文本"}
+                  </div>
+                </button>
+                <div className="flex justify-end gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() => openEdit(source)}
+                  >
+                    编辑
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onPress={() => onRemove(source.id)}
+                  >
+                    删除
+                  </Button>
+                </div>
+              </div>
+            ))}
+            {sources.length === 0 && (
+              <div className="grid min-h-32 w-full place-items-center rounded-[10px] border border-dashed border-separator bg-surface px-4 text-center text-sm text-muted">
+                暂无输入条目
+              </div>
+            )}
+            <AddSourceDropdown onAdd={openAdd} />
+          </>
+        )}
         <input
           ref={addFileInputRef}
           type="file"
@@ -270,7 +330,7 @@ function InputSourceDialog({
               <label className="grid gap-1 text-sm">
                 <span className="font-medium">条目名称</span>
                 <input
-                  className="h-10 rounded-md border border-separator bg-surface px-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  className="h-11 rounded-[10px] border border-separator bg-surface px-3 text-sm outline-none focus:border-accent"
                   value={draft.key}
                   onChange={(event) =>
                     onChange({ ...draft, key: event.target.value })
@@ -313,7 +373,7 @@ function InputSourceDialog({
               />
               {draft.kind === "text" ? (
                 <textarea
-                  className="h-72 min-h-48 w-full resize-y rounded-md border border-separator bg-surface px-3 py-2 font-mono text-sm leading-6 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  className="h-72 min-h-48 w-full resize-none rounded-[10px] border border-separator bg-surface px-3 py-2 font-mono text-sm leading-6 outline-none focus:border-accent"
                   value={draft.text}
                   onChange={(event) =>
                     onChange({ ...draft, text: event.target.value })
@@ -322,7 +382,7 @@ function InputSourceDialog({
                   spellCheck={false}
                 />
               ) : (
-                <div className="grid gap-3 rounded-md border border-dashed border-separator bg-surface p-4 text-sm text-muted">
+                <div className="grid gap-3 rounded-[10px] border border-dashed border-separator bg-surface p-4 text-sm text-muted">
                   <div>
                     {draft.fileName
                       ? `${draft.fileName} · ${formatBytes(draft.size ?? 0)}`
@@ -360,7 +420,7 @@ function InputSourceDialog({
 
 function Badge({ children }: { children: string }) {
   return (
-    <span className="rounded bg-default px-2 py-0.5 text-xs text-muted">
+    <span className="rounded-2xl bg-default px-2 py-0.5 text-xs text-muted">
       {children}
     </span>
   );

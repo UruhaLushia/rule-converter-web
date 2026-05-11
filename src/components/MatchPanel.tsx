@@ -12,7 +12,7 @@ interface MatchPanelProps {
 
 export function MatchPanel(props: MatchPanelProps) {
   return (
-    <Card className="rounded-lg border border-separator shadow-sm">
+    <Card className="rounded-[14px] border border-separator">
       <Card.Header>
         <Card.Title>匹配测试</Card.Title>
         <Card.Description>
@@ -28,7 +28,7 @@ export function MatchPanel(props: MatchPanelProps) {
           <label className="grid gap-1 text-sm">
             <span className="font-medium">查询</span>
             <input
-              className="h-10 rounded-md border border-separator bg-surface px-3 text-sm shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="h-11 rounded-[10px] border border-separator bg-surface px-3 text-sm outline-none focus:border-accent"
               value={props.matchQuery}
               onChange={(event) => props.setMatchQuery(event.target.value)}
               placeholder="域名、IP 或规则查询"

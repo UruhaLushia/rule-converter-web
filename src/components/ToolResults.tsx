@@ -12,18 +12,18 @@ export function ToolResults({ matchResult, indexSections }: ToolResultsProps) {
   if (!matchResult && indexSections.length === 0) return null;
 
   return (
-    <Card className="rounded-lg border border-separator shadow-sm">
+    <Card className="rounded-[14px] border border-separator">
       <Card.Content className="space-y-3">
         {matchResult && (
-          <div className="rounded-md border border-separator bg-surface p-3 text-sm">
+          <div className="rounded-[10px] border border-separator bg-surface p-3 text-sm">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-medium">匹配结果</span>
-                <span className="rounded bg-default px-2 py-0.5 font-mono text-xs text-muted">
+                <span className="rounded-[8px] bg-default px-2 py-0.5 font-mono text-xs text-muted">
                   {matchResult.query}
                 </span>
                 {matchResult.kind && (
-                  <span className="rounded bg-default px-2 py-0.5 text-xs text-muted">
+                  <span className="rounded-[8px] bg-default px-2 py-0.5 text-xs text-muted">
                     {matchResult.kind}
                   </span>
                 )}
@@ -31,8 +31,8 @@ export function ToolResults({ matchResult, indexSections }: ToolResultsProps) {
               <span
                 className={
                   matchResult.matched
-                    ? "rounded bg-success/10 px-2 py-0.5 text-xs font-medium text-success"
-                    : "rounded bg-default px-2 py-0.5 text-xs font-medium text-muted"
+                    ? "rounded-[8px] bg-success/10 px-2 py-0.5 text-xs font-medium text-success"
+                    : "rounded-[8px] bg-default px-2 py-0.5 text-xs font-medium text-muted"
                 }
               >
                 {matchResult.matched ? "已匹配" : "未匹配"}
@@ -48,7 +48,7 @@ export function ToolResults({ matchResult, indexSections }: ToolResultsProps) {
                 ))}
               </div>
             ) : (
-              <div className="mt-3 rounded bg-default px-3 py-2 text-xs text-muted">
+              <div className="mt-3 rounded-[10px] bg-default px-3 py-2 text-xs text-muted">
                 没有命中规则。
               </div>
             )}
@@ -80,18 +80,18 @@ function IndexSectionResult({ section }: { section: IndexSection }) {
           : ""}
       </div>
       <input
-        className="h-9 w-full rounded-md border border-separator bg-surface px-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="h-11 w-full rounded-[10px] border border-separator bg-surface px-3 text-sm outline-none focus:border-accent"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={`搜索${title}`}
       />
-      <div className="rounded-md bg-default/40 p-2">
+      <div className="rounded-[10px] bg-default/40 p-2">
         {filteredItems.length > 0 ? (
           <Virtuoso
             style={{ height: 288 }}
             data={filteredItems}
             itemContent={(_, item) => (
-              <div className="mb-1 truncate rounded bg-surface px-2 py-1 font-mono text-xs text-muted">
+              <div className="mb-1 truncate rounded-[10px] bg-surface px-2 py-1 font-mono text-xs text-muted">
                 {item}
               </div>
             )}
@@ -115,25 +115,25 @@ function indexSectionTitle(title: string) {
 
 function MatchRuleItem({ rule }: { rule: MatchRule }) {
   return (
-    <div className="rounded-md border border-separator bg-default/60 px-3 py-2">
+    <div className="rounded-[10px] border border-separator bg-default/60 px-3 py-2">
       <div className="flex flex-wrap items-center gap-2">
         {rule.input && (
-          <span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
+          <span className="rounded-[8px] bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
             {rule.input}
           </span>
         )}
         {rule.behavior && (
-          <span className="rounded bg-surface px-2 py-0.5 text-xs font-medium text-foreground">
+          <span className="rounded-[8px] bg-surface px-2 py-0.5 text-xs font-medium text-foreground">
             {rule.behavior}
           </span>
         )}
         {rule.source && (
-          <span className="rounded bg-surface px-2 py-0.5 text-xs text-muted">
+          <span className="rounded-[8px] bg-surface px-2 py-0.5 text-xs text-muted">
             {rule.source}
           </span>
         )}
         {rule.set && (
-          <span className="rounded bg-surface px-2 py-0.5 text-xs text-muted">
+          <span className="rounded-[8px] bg-surface px-2 py-0.5 text-xs text-muted">
             {rule.set}
           </span>
         )}

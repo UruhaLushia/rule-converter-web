@@ -24,7 +24,7 @@ export function OutputPanel({
   if (!result) return null;
 
   return (
-    <Card className="rounded-lg border border-separator shadow-sm">
+    <Card className="rounded-[14px] border border-separator">
       <Card.Header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Card.Title>输出</Card.Title>
@@ -68,13 +68,13 @@ export function OutputPanel({
           return (
             <div
               key={`${output.behavior}-${output.format}-${index}`}
-              className="rounded-md border border-separator bg-surface p-3"
+              className="rounded-[10px] border border-separator bg-surface p-3"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium">{fileName}</span>
-                    <span className="rounded bg-default px-2 py-0.5 font-mono text-xs text-muted">
+                    <span className="rounded-[8px] bg-default px-2 py-0.5 font-mono text-xs text-muted">
                       {output.format}
                     </span>
                     <span className="text-xs text-muted">
@@ -96,13 +96,13 @@ export function OutputPanel({
               {preview !== null && (
                 <textarea
                   readOnly
-                  className="mt-3 max-h-72 min-h-32 w-full resize-y rounded-md border border-separator bg-background px-3 py-2 font-mono text-xs leading-5 outline-none"
+                  className="mt-3 max-h-72 min-h-32 w-full resize-none rounded-[10px] border border-separator bg-background px-3 py-2 font-mono text-xs leading-5 outline-none"
                   value={preview}
                   spellCheck={false}
                 />
               )}
               {isLargeText && (
-                <div className="mt-3 rounded-md bg-default px-3 py-2 text-sm text-muted">
+                <div className="mt-3 rounded-[10px] bg-default px-3 py-2 text-sm text-muted">
                   文本输出超过 {formatBytes(TEXT_PREVIEW_LIMIT)}
                   ，已跳过页面预览以降低内存占用。
                 </div>
@@ -112,7 +112,7 @@ export function OutputPanel({
         })}
 
         {result.skipped.length > 0 && (
-          <details className="rounded-md border border-separator bg-surface">
+          <details className="rounded-[10px] border border-separator bg-surface">
             <summary className="cursor-pointer px-3 py-2 text-sm text-muted">
               查看跳过规则
             </summary>

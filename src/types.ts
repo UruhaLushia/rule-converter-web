@@ -52,7 +52,7 @@ export type OutputFormat =
 
 export type OutputBehavior = Behavior;
 export type InputTab = "text" | "file";
-export type WorkspaceMode = "convert" | "match";
+export type WorkspaceMode = "convert" | "match" | "index";
 
 export type InputSourceKind = "text" | "file";
 

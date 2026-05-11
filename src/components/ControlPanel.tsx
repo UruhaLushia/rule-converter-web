@@ -55,7 +55,7 @@ export function ControlPanel(props: ControlPanelProps) {
     props.databaseFilterKinds.asns;
 
   return (
-    <Card className="rounded-lg border border-separator shadow-sm">
+    <Card className="rounded-[14px] border border-separator">
       <Card.Header>
         <Card.Title>转换选项</Card.Title>
       </Card.Header>
@@ -82,14 +82,14 @@ export function ControlPanel(props: ControlPanelProps) {
               items={props.outputBehaviorItems}
             />
           ) : (
-            <div className="rounded-md bg-default px-3 py-2 text-sm text-muted">
+            <div className="rounded-[10px] bg-default px-3 py-2 text-sm text-muted">
               {props.behaviorHint}
             </div>
           )}
           <label className="grid gap-1 text-sm">
             <span className="font-medium">文件名</span>
             <input
-              className="h-10 rounded-md border border-separator bg-surface px-3 text-sm shadow-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="h-11 rounded-[10px] border border-separator bg-surface px-3 text-sm outline-none focus:border-accent"
               value={props.outputName}
               onChange={(event) => props.setOutputName(event.target.value)}
               onBlur={() =>
@@ -100,7 +100,7 @@ export function ControlPanel(props: ControlPanelProps) {
             />
           </label>
           {supportsDatabaseFilters && (
-            <div className="grid gap-2 rounded-md border border-separator bg-surface p-3 text-sm">
+            <div className="grid gap-2 rounded-[10px] border border-separator bg-surface p-3 text-sm">
               <div className="font-medium">数据库筛选</div>
               {props.databaseFilterKinds.countries && (
                 <DbFilterAutocomplete
@@ -216,26 +216,26 @@ function DbFilterAutocomplete({
     <div className="grid gap-2">
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium">{label}</span>
-        <span className="rounded bg-default px-2 py-0.5 text-xs text-muted">
+        <span className="text-xs tabular-nums text-muted">
           {value.length > 0
             ? `${value.length} / ${items.length}`
             : items.length}
         </span>
       </div>
-      <div className="rounded-md bg-default/40 p-2">
+      <div className="space-y-2">
         <input
-          className="h-9 w-full rounded-md border border-separator bg-surface px-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="h-11 w-full rounded-[10px] border border-separator bg-background px-3 text-sm outline-none transition-colors placeholder:text-muted/75 focus:border-accent focus:bg-surface"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={searchPlaceholder}
         />
         {value.length > 0 ? (
-          <div className="mt-2 flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1">
             {compactSelected.map((item) => (
               <button
                 key={item}
                 type="button"
-                className="rounded-full bg-surface px-2 py-1 font-mono text-xs text-foreground shadow-sm hover:bg-danger/10 hover:text-danger"
+                className="rounded-[10px] border border-separator bg-background px-2 py-1 font-mono text-xs text-foreground hover:bg-danger/10 hover:text-danger"
                 onClick={() =>
                   toggleItem({
                     value: item,
@@ -247,17 +247,17 @@ function DbFilterAutocomplete({
               </button>
             ))}
             {hiddenSelectedCount > 0 && (
-              <span className="rounded-full bg-surface px-2 py-1 text-xs text-muted shadow-sm">
+              <span className="rounded-[10px] border border-separator bg-background px-2 py-1 text-xs text-muted">
                 +{hiddenSelectedCount}
               </span>
             )}
           </div>
         ) : (
-          <div className="mt-2 text-xs text-muted">{placeholder}</div>
+          <div className="text-xs text-muted">{placeholder}</div>
         )}
       </div>
       {query.trim() && (
-        <div className="rounded-md bg-default/40 p-2">
+        <div className="rounded-[10px] border border-separator bg-background p-1">
           {visibleItems.length > 0 ? (
             <Virtuoso
               style={{ height: 144 }}
@@ -266,12 +266,12 @@ function DbFilterAutocomplete({
                 <button
                   type="button"
                   className={[
-                    "mb-1 flex h-8 w-full items-center justify-between rounded px-2 text-left font-mono text-xs transition-colors",
+                    "mb-1 flex h-8 w-full items-center justify-between rounded-[10px] px-2 text-left font-mono text-xs transition-colors",
                     selectedSet.has(item.value)
                       ? "bg-accent/15 text-accent"
                       : selectedRealCodes.has(realFilterValue(item.value))
                         ? "bg-warning/10 text-warning hover:text-warning"
-                        : "bg-surface text-muted hover:text-foreground",
+                        : "text-muted hover:bg-default hover:text-foreground",
                   ].join(" ")}
                   onClick={() => toggleItem(item)}
                 >

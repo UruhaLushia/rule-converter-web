@@ -1,13 +1,101 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+:root,
+.light,
 .dark {
-  --color-background: #0f1012;
+  --radius: 0.75rem;
+  --field-radius: 0.625rem;
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 0.875rem;
+  --radius-4xl: 0.875rem;
+  --surface-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --field-shadow: none;
+  --overlay-shadow: 0 8px 20px 0 rgb(0 0 0 / 0.1);
+  --color-panel: #f4f4f5;
+}
+
+.light {
+  --color-background: #ececee;
+  --color-surface: #ffffff;
+  --color-default: #e6e7ea;
+  --color-panel: #f4f4f5;
+  --color-separator: #d9dade;
+}
+
+@layer components {
+  .button,
+  .select__trigger,
+  .list-box-item,
+  .menu-item {
+    border-radius: 0.625rem;
+  }
+
+  .card,
+  .select__popover,
+  .dropdown__popover,
+  .drawer__dialog {
+    border-radius: 0.875rem;
+  }
+
+  :root:not(.dark) .card,
+  .light .card,
+  :root:not(.dark) .drawer__dialog,
+  .light .drawer__dialog {
+    background: var(--color-panel);
+  }
+
+  .dark .card {
+    background: var(--color-background);
+  }
+
+  :root:not(.dark) .select__trigger,
+  .light .select__trigger {
+    background: #ffffff;
+  }
+
+  :root:not(.dark) input.bg-surface,
+  .light input.bg-surface,
+  :root:not(.dark) textarea.bg-surface,
+  .light textarea.bg-surface {
+    background: #ffffff;
+  }
+
+  .list-box-item,
+  .menu-item {
+    box-shadow: none;
+  }
+
+  .list-box-item:active,
+  .list-box-item[data-pressed="true"],
+  .menu-item:active,
+  .menu-item[data-pressed="true"] {
+    transform: none;
+  }
+
+  .list-box-item:hover,
+  .list-box-item[data-hovered="true"],
+  .list-box-item[data-focus="true"],
+  .menu-item:hover,
+  .menu-item[data-hovered="true"],
+  .menu-item[data-focus="true"] {
+    box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.08);
+  }
+}
+
+.dark {
+  --color-background: #050506;
   --color-foreground: #e6e2d8;
+  --color-panel: #101115;
   --color-surface: #17181c;
-  --color-default: #24252a;
+  --color-default: #202127;
   --color-muted: #aaa79f;
-  --color-separator: #2d2e34;
+  --color-separator: #2a2b31;
 }
 
 html {
