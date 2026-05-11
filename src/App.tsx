@@ -376,8 +376,16 @@ export default function App() {
               索引读取。
             </p>
           </div>
-          <div className="text-xs text-muted">
-            Mihomo / Sing-Box / Egern / General / GeoIP / Geosite
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted sm:justify-end">
+            <span>Mihomo / Sing-Box / Egern / General / GeoIP / Geosite</span>
+            <a
+              className="rounded-full border border-separator bg-surface px-3 py-1 font-medium text-foreground shadow-sm transition-colors hover:border-accent hover:text-accent"
+              href="https://github.com/UruhaLushia/rule-converter-web"
+              target="_blank"
+              rel="noreferrer"
+            >
+              源码
+            </a>
           </div>
         </header>
 

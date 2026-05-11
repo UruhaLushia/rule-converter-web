@@ -39,7 +39,7 @@ export function WorkspaceSidebar({
 
       <aside
         className={[
-          "fixed inset-y-0 left-0 z-40 w-72 border-r border-separator bg-surface p-3 shadow-xl transition-transform duration-200 ease-out sm:sticky sm:top-4 sm:z-auto sm:h-[calc(100vh-2rem)] sm:w-auto sm:translate-x-0 sm:rounded-lg sm:border sm:p-2 sm:shadow-sm",
+          "fixed inset-y-0 left-0 z-40 w-72 border-r border-separator bg-surface p-3 shadow-xl transition-transform duration-200 ease-out sm:sticky sm:inset-auto sm:top-4 sm:z-auto sm:w-auto sm:translate-x-0 sm:rounded-lg sm:border sm:p-2 sm:shadow-sm",
           open ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
