@@ -5,7 +5,7 @@ import {
   RiMoonLine,
   RiSunLine,
 } from "react-icons/ri";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   buildDb,
   bufToBuf,
@@ -193,11 +193,10 @@ export default function App() {
     [result],
   );
 
-  useEffect(() => {
-    if (!supportsSplitOutput && outputName.includes("${code}")) {
-      setOutputName(defaultMergedOutputName(inputSources, outputFormat));
-    }
-  }, [inputSources, outputFormat, outputName, supportsSplitOutput]);
+  const effectiveOutputName =
+    !supportsSplitOutput && outputName.includes("${code}")
+      ? defaultMergedOutputName(inputSources, outputFormat)
+      : outputName;
 
   const setOutputTarget = (next: OutputTarget) => {
     setOutputTargetState(next);
@@ -401,41 +400,36 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors">
       <main className="mx-auto flex w-full max-w-360 flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:px-8">
-        <header className="flex flex-col gap-2 py-1 sm:flex-row sm:items-end sm:justify-between sm:py-2">
-          <div>
-            <div className="flex items-center gap-2">
+        <header className="grid gap-2 py-1 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:py-2">
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-center gap-2">
               <button
                 type="button"
                 aria-label="打开侧栏"
-                className="grid size-10 place-items-center rounded-[10px] border border-separator bg-surface text-lg sm:hidden"
+                className="grid size-10 shrink-0 place-items-center rounded-[10px] border border-separator bg-surface text-lg sm:hidden"
                 onClick={() => setSidebarOpen(true)}
               >
                 <RiMenuLine className="size-4" aria-hidden="true" />
               </button>
-              <h1 className="text-2xl font-semibold tracking-normal">
+              <h1 className="min-w-0 flex-1 truncate text-2xl font-semibold tracking-normal">
                 Rule Converter
               </h1>
+              <HeaderActions
+                themePreference={themePreference}
+                onThemeChange={selectThemePreference}
+                className="sm:hidden"
+              />
             </div>
             <p className="mt-1 text-sm text-muted">
               本地 WASM 转换规则集，支持转换、匹配测试和 GeoIP/Geosite
               索引读取。
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted sm:justify-end">
-            <ThemePreferenceTabs
-              value={themePreference}
-              onChange={selectThemePreference}
-            />
-            <a
-              className="grid size-8 place-items-center rounded-[10px] text-foreground/80 transition-colors hover:bg-surface hover:text-accent"
-              href="https://github.com/UruhaLushia/rule-converter-web"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="源码"
-            >
-              <RiGithubLine className="size-4" aria-hidden="true" />
-            </a>
-          </div>
+          <HeaderActions
+            themePreference={themePreference}
+            onThemeChange={selectThemePreference}
+            className="hidden sm:flex"
+          />
         </header>
 
         <section className="grid items-start gap-3 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)]">
@@ -459,7 +453,7 @@ export default function App() {
               {workspace === "convert" ? (
                 <OutputPanel
                   result={result}
-                  outputName={outputName}
+                  outputName={effectiveOutputName}
                   totalOutputBytes={totalOutputBytes}
                 />
               ) : (
@@ -484,7 +478,7 @@ export default function App() {
                   outputBehaviorItems={outputBehaviorItems}
                   outputBehaviorSupported={outputBehaviorSupported}
                   behaviorHint={behaviorHint}
-                  outputName={outputName}
+                  outputName={effectiveOutputName}
                   setOutputName={setOutputName}
                   databaseFilterKinds={databaseFilterKinds}
                   databaseFilterOptions={databaseFilterOptions}
@@ -845,6 +839,38 @@ function dbBuildEntryKeys(source: InputSourceItem, filter: Set<string>) {
   );
 }
 
+function HeaderActions({
+  themePreference,
+  onThemeChange,
+  className,
+}: {
+  themePreference: ThemePreference;
+  onThemeChange: (value: ThemePreference) => void;
+  className?: string;
+}) {
+  return (
+    <div
+      className={[
+        "flex shrink-0 items-center gap-1.5 text-xs text-muted",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <ThemePreferenceTabs value={themePreference} onChange={onThemeChange} />
+      <a
+        className="grid size-8 place-items-center rounded-[10px] text-foreground/80 transition-colors hover:bg-surface hover:text-accent"
+        href="https://github.com/UruhaLushia/rule-converter-web"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="源码"
+      >
+        <RiGithubLine className="size-4" aria-hidden="true" />
+      </a>
+    </div>
+  );
+}
+
 const THEME_TABS: {
   id: ThemePreference;
   label: string;
@@ -880,7 +906,7 @@ function ThemePreferenceTabs({
             aria-label={`主题：${item.label}`}
             title={item.label}
             className={[
-              "grid size-7 place-items-center rounded-[8px] text-sm leading-none transition-colors",
+              "grid size-7 place-items-center rounded-2xl text-sm leading-none transition-colors",
               active
                 ? "bg-surface text-foreground"
                 : "text-muted hover:text-foreground",
