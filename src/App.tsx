@@ -531,7 +531,10 @@ function sourceIndexItems(source: InputSourceItem, target: InputTarget) {
     indexItems(source.indexes ?? [], title).length > 0
       ? indexItems(source.indexes ?? [], title)
       : [source.key.trim()].filter(Boolean);
-  return target === "geoip" ? items.map((item) => item.toLowerCase()) : items;
+  if (target === "geoip" || target === "geosite") {
+    return items.map((item) => item.toLowerCase());
+  }
+  return items;
 }
 
 function isDatabaseSource(source: InputSourceItem) {
