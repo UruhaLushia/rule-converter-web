@@ -277,11 +277,11 @@ export default function App() {
         : undefined,
     countries:
       databaseFilterKinds.countries && filterCountries.length > 0
-        ? filterCountries
+        ? unscopedDbFilterValues(filterCountries)
         : undefined,
     codes:
       databaseFilterKinds.codes && filterCodes.length > 0
-        ? filterCodes
+        ? unscopedDbFilterValues(filterCodes)
         : undefined,
     asns:
       databaseFilterKinds.asns && filterAsns.length > 0
@@ -556,6 +556,14 @@ function scopedDbFilterValue(source: InputSourceItem, code: string) {
 function unscopedDbFilterValue(value: string) {
   const index = value.indexOf(":");
   return index === -1 ? value : value.slice(index + 1);
+}
+
+function unscopedDbFilterValues(values: string[]) {
+  return uniqueValues(values.map(unscopedDbFilterValue));
+}
+
+function uniqueValues(values: string[]) {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 function dbFilterMatchesSource(
