@@ -906,7 +906,7 @@ function ThemePreferenceTabs({
             aria-label={`主题：${item.label}`}
             title={item.label}
             className={[
-              "grid size-7 place-items-center rounded-2xl text-sm leading-none transition-colors",
+              "grid size-7 place-items-center theme-tab-button text-sm leading-none transition-colors",
               active
                 ? "bg-surface text-foreground"
                 : "text-muted hover:text-foreground",

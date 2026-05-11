@@ -36,6 +36,10 @@
     border-radius: 0.625rem;
   }
 
+  .theme-tab-button {
+    border-radius: 8px;
+  }
+
   .card,
   .select__popover,
   .dropdown__popover,
