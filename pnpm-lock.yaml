@@ -14,8 +14,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4(tailwind-merge@3.4.0)(tailwindcss@4.2.4)
       "@uruhalushia/rule-converter-wasm":
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: 0.3.1
+        version: 0.3.1
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -1104,10 +1104,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  "@uruhalushia/rule-converter-wasm@0.3.0":
+  "@uruhalushia/rule-converter-wasm@0.3.1":
     resolution:
       {
-        integrity: sha512-BhYhMshZ9Z6oRfRB0qb2f2lTaR252Z1D513IpBBdIyjof4KVGCkpbhaD5sHFP6ucOTzSFghftBU9SrZTaXpdKg==,
+        integrity: sha512-qfCKi1hlZ+WkmGvvuDEBu1L0+oyff1FkxleYheR+e7UGTYDmeExHsArgDZ/JDG29jww4+WfN0pbhmfzz20jhrQ==,
       }
 
   "@vitejs/plugin-react@6.0.1":
@@ -2865,7 +2865,7 @@ snapshots:
       "@typescript-eslint/types": 8.59.2
       eslint-visitor-keys: 5.0.1
 
-  "@uruhalushia/rule-converter-wasm@0.3.0": {}
+  "@uruhalushia/rule-converter-wasm@0.3.1": {}
 
   "@vitejs/plugin-react@6.0.1(vite@8.0.11(@types/node@24.12.3)(jiti@2.7.0))":
     dependencies:

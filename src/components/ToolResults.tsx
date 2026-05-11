@@ -117,6 +117,11 @@ function MatchRuleItem({ rule }: { rule: MatchRule }) {
   return (
     <div className="rounded-md border border-separator bg-default/60 px-3 py-2">
       <div className="flex flex-wrap items-center gap-2">
+        {rule.input && (
+          <span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
+            {rule.input}
+          </span>
+        )}
         {rule.behavior && (
           <span className="rounded bg-surface px-2 py-0.5 text-xs font-medium text-foreground">
             {rule.behavior}

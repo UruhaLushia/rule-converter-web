@@ -13,6 +13,7 @@ import type {
 const FORMAT_EXTENSIONS: Record<string, string> = {
   mrs: "mrs",
   text: "list",
+  adguard: "txt",
   yaml: "yaml",
   json: "json",
   srs: "srs",

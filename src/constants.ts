@@ -13,6 +13,7 @@ export const TEXT_PREVIEW_LIMIT = 512 * 1024;
 export const TEXT_FORMATS = new Set([
   "text",
   "yaml",
+  "adguard",
   "json",
   "domainset",
   "ruleset",
@@ -51,6 +52,7 @@ const TEXT_INPUT_FORMAT_IDS = new Set<InputFormat>([
   "auto",
   "yaml",
   "text",
+  "adguard",
   "json",
   "domainset",
   "ruleset",
@@ -62,6 +64,7 @@ export const ALL_INPUT_FORMATS: OptionItem<InputFormat>[] = [
   { id: "yaml", label: "YAML" },
   { id: "mrs", label: "MRS" },
   { id: "text", label: "Text" },
+  { id: "adguard", label: "AdGuard" },
   { id: "json", label: "JSON" },
   { id: "srs", label: "SRS" },
   { id: "domainset", label: "Domain Set" },
@@ -88,6 +91,7 @@ export const INPUT_FORMATS_BY_TARGET: Record<
   general: [
     { id: "auto", label: "自动检测" },
     { id: "text", label: "Text" },
+    { id: "adguard", label: "AdGuard" },
     { id: "domainset", label: "Domain Set" },
     { id: "ruleset", label: "Rule Set" },
     { id: "ipset", label: "IP Set" },
@@ -165,6 +169,7 @@ export const OUTPUT_FORMATS_BY_TARGET: Record<
   egern: [{ id: "yaml", label: "YAML" }],
   general: [
     { id: "domainset", label: "Domain Set" },
+    { id: "adguard", label: "AdGuard" },
     { id: "ruleset", label: "Rule Set" },
     { id: "ipset", label: "IP Set" },
   ],
@@ -212,7 +217,8 @@ export function defaultOutputBehavior(
   target: OutputTarget,
   format: OutputFormat,
 ): OutputBehavior {
-  if (target === "general" && format === "domainset") return "domain";
+  if (target === "general" && (format === "domainset" || format === "adguard"))
+    return "domain";
   if (target === "general" && format === "ipset") return "ip";
   if (target === "mihomo" && format === "mrs") return "domain";
   return "classical";
@@ -258,13 +264,15 @@ export function supportsOutputBehavior(
   if (target === "geoip" || target === "geosite") return false;
   return !(
     target === "general" &&
-    (format === "domainset" || format === "ipset")
+    (format === "domainset" || format === "adguard" || format === "ipset")
   );
 }
 
 export function outputBehaviorHint(target: OutputTarget, format: OutputFormat) {
   if (target === "general" && format === "domainset")
     return "Domain Set 固定输出 domain 规则。";
+  if (target === "general" && format === "adguard")
+    return "AdGuard 固定输出 domain 规则。";
   if (target === "general" && format === "ipset")
     return "IP Set 固定输出 IP CIDR 规则。";
   if (target === "geoip" || target === "geosite")

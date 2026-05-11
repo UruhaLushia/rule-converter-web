@@ -90,7 +90,6 @@ export default function App() {
   const [isMatching, setIsMatching] = useState(false);
 
   const lockedDetectedInput = detectedInput;
-  const primaryInput = inputSources[0];
   const outputTargets = outputTargetsForInput(lockedDetectedInput);
   const outputFormats = outputFormatsForInput(
     lockedDetectedInput,
@@ -277,11 +276,11 @@ export default function App() {
     split: supportsSplitOutput ? splitOutput : undefined,
   });
 
-  const getMatchOptions = () => ({
-    inputTarget: inputTargetFromSource(primaryInput) ?? effectiveInputTarget,
-    inputFormat: inputFormatFromSource(primaryInput) ?? effectiveInputFormat,
+  const getMatchOptions = (source: InputSourceItem | undefined) => ({
+    inputTarget: inputTargetFromSource(source) ?? effectiveInputTarget,
+    inputFormat: inputFormatFromSource(source) ?? effectiveInputFormat,
     inputBehavior:
-      inputBehaviorFromSource(primaryInput) ??
+      inputBehaviorFromSource(source) ??
       (inputBehaviorSupported && inputBehavior !== "auto"
         ? inputBehavior
         : undefined),
@@ -326,13 +325,18 @@ export default function App() {
     try {
       const query = matchQuery.trim();
       if (!query) throw new Error("请输入匹配测试内容");
-      if (!primaryInput) throw new Error("请先添加输入");
-      const options = getMatchOptions();
-      const matched =
-        primaryInput.kind === "text"
-          ? matchStr(primaryInput.text, query, options)
-          : matchBuf(await sourcePayload(primaryInput), query, options);
-      setMatchResult(matched as MatchResult);
+      if (inputSources.length === 0) throw new Error("请先添加输入");
+      const results = await Promise.all(
+        inputSources.map(async (source) => {
+          const options = getMatchOptions(source);
+          const result =
+            source.kind === "text"
+              ? matchStr(source.text, query, options)
+              : matchBuf(await sourcePayload(source), query, options);
+          return withInputSource(result as MatchResult, source);
+        }),
+      );
+      setMatchResult(mergeMatchResults(results, query));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -479,6 +483,28 @@ function indexItems(sections: IndexSection[], titlePrefix: string) {
     sections.find((section) => section.title.startsWith(titlePrefix))?.items ??
     []
   );
+}
+
+function withInputSource(result: MatchResult, source: InputSourceItem) {
+  const input = source.key.trim() || source.fileName || "输入";
+  return {
+    ...result,
+    rules: result.rules?.map((rule) => ({ ...rule, input })),
+  };
+}
+
+function mergeMatchResults(
+  results: MatchResult[],
+  fallbackQuery: string,
+): MatchResult {
+  const rules = results.flatMap((result) => result.rules ?? []);
+  const first = results[0];
+  return {
+    matched: results.some((result) => result.matched),
+    query: first?.query ?? fallbackQuery,
+    kind: first?.kind,
+    rules,
+  };
 }
 
 function databaseKindsFromSources(sources: InputSourceItem[]) {

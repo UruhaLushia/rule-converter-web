@@ -13,6 +13,7 @@ export type InputFormat =
   | "yaml"
   | "mrs"
   | "text"
+  | "adguard"
   | "json"
   | "srs"
   | "domainset"
@@ -36,6 +37,7 @@ export type OutputTarget =
 export type OutputFormat =
   | "mrs"
   | "text"
+  | "adguard"
   | "yaml"
   | "json"
   | "srs"
@@ -135,6 +137,7 @@ export interface ConvertResult {
 }
 
 export interface MatchRule {
+  input?: string;
   behavior?: string;
   rule?: string;
   source?: string;
